@@ -1,35 +1,39 @@
-# ----------------------------------
-# Environment: ubuntu
-# Minimum Panel Version: 0.7.X
-# ----------------------------------
-FROM  ubuntu:18.04
+FROM steamcmd/steamcmd:ubuntu-24
 
-LABEL author="Ankit Patel" maintainer="ankit@bmghosting.com"
+LABEL author="Lucas Berry" maintainer="lucas@luckinber.com"
 
-ENV   DEBIAN_FRONTEND noninteractive
+# Install runtime dependencies commonly required by Steam/Unity dedicated servers.
+RUN apt-get update \
+	&& apt full-upgrade -y \
+	&& apt-get install -y --no-install-recommends \
+		ca-certificates \
+		curl \
+		file \
+		iproute2 \
+		libc6-i386 \
+		lib32gcc-s1 \
+		lib32stdc++6 \
+		libsdl2-2.0-0 \
+		tzdata \
+	&& rm -rf /var/lib/apt/lists/*
 
-## add container user
-RUN   useradd -m -d /home/container -s /bin/bash container
-
-## update base packages
-RUN   apt update \
- &&   apt upgrade -y
-
-## install dependencies
-RUN   apt install -y gcc g++ libgcc1 lib32gcc1 gdb libc6 libstdc++6 git wget curl tar zip unzip binutils xz-utils liblzo2-2 bzip2 zlib1g iproute2 net-tools netcat telnet libatomic1 libsdl1.2debian libsdl2-2.0-0 \
-      libfontconfig libicu60 libiculx60 icu-devtools libunwind8 libssl1.0.0 libssl1.0-dev sqlite3 libsqlite3-dev libmariadbclient-dev libduktape202 libzip4 locales ffmpeg apt-transport-https 
-
-## Steamclient.so Link
-RUN ln -s "/home/container/steamcmd/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" 
-
-## configure locale
-RUN   update-locale lang=en_US.UTF-8 \
- &&   dpkg-reconfigure --frontend noninteractive locales
-
+# Create the Pterodactyl container user and home.
+RUN useradd -d /home/container -m container
 USER container
-ENV  USER=container HOME=/home/container
-
+ENV USER=container HOME=/home/container
 WORKDIR /home/container
 
-COPY  ./entrypoint.sh /entrypoint.sh
-CMD   ["/bin/bash", "/entrypoint.sh"]
+ENV STEAMAPPID=1424230
+ENV STEAMAPP=holdfastnaw
+ENV STEAMAPPDIR="${HOME}/${STEAMAPP}-dedicated"
+
+ENV CONFIG_DIR="${STEAMAPPDIR}/configs"
+ENV ADMIN_DIR="${CONFIG_DIR}/admin"
+ENV LOG_DIR="${STEAMAPPDIR}/logs"
+ENV WORKSHOP_DIR="${STEAMAPPDIR}/workshop"
+RUN mkdir -p "${CONFIG_DIR}" "${ADMIN_DIR}" "${LOG_DIR}" "${WORKSHOP_DIR}"
+
+COPY --chown=container:container ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
