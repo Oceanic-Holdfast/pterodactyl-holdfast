@@ -1,31 +1,97 @@
 #!/bin/bash
+set -euo pipefail
+
 cd /home/container
 
-# Make internal Docker IP address available to processes.
-export INTERNAL_IP=`ip route get 1 | awk '{print $NF;exit}'`
+# Install the game using SteamCMD with retry logic
+install_game() {
+  local attempt=1
+  local max_attempts=5
 
-# Modify the configuration variables using sed
-pushd holdfastnaw-dedicated/configs/
-if [ -f "$SERVER_CONFIG_PATH" ]; then
-	echo "Found configuration file - replacing variables"
-	sed -i "s/^server_name .*/server_name $(printf '%s\n' "$SERVER_NAME" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
-	sed -i "s/^maximum_players .*/maximum_players $(printf '%s\n' "$PLAYERS" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
-	sed -i "s/^server_welcome_message .*/server_welcome_message $(printf '%s\n' "$MOTD" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
-	sed -i "s/^server_region .*/server_region $(printf '%s\n' "$REGION" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
-	sed -i "s/^server_admin_password .*/server_admin_password $(printf '%s\n' "$ADMIN_PASS" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
-	sed -i "s/^#\{0,1\}server_password .*/server_password $(printf '%s\n' "$SERVER_PASS" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
-	sed -i "s/^server_port .*/server_port $(printf '%s\n' "$SERVER_PORT" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
-	sed -i "s/^steam_communications_port .*/steam_communications_port $(printf '%s\n' "$SERVER_COMM_PORT" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
-	sed -i "s/^steam_query_port .*/steam_query_port $(printf '%s\n' "$SERVER_QUERY_PORT" | sed -e 's/[\/&]/\\&/g')/g" "$SERVER_CONFIG_PATH"
+  while [ "$attempt" -le "$max_attempts" ]; do
+    echo "[Startup] Steam install attempt ${attempt}/${max_attempts}"
+
+    if steamcmd \
+      +force_install_dir "${STEAMAPPDIR}" \
+      +login anonymous \
+      +app_update "${STEAMAPPID}" validate \
+      +quit; then
+      if [ -x "$STEAMAPPDIR/Holdfast NaW" ]; then
+        echo "[Startup] Steam app ${STEAMAPPID} installed successfully."
+        # Create symbolic links for steamclient.so in sdk32 and sdk64 directories
+        mkdir -p "${STEAMDIR}/sdk32/" "${STEAMDIR}/sdk64/"
+        ln -sfnT "${STEAMAPPDIR}/steamclient.so" "${STEAMDIR}/sdk32/steamclient.so"
+        ln -sfnT "${STEAMAPPDIR}/linux64/steamclient.so" "${STEAMDIR}/sdk64/steamclient.so"
+        return 0
+      fi
+    fi
+
+    attempt=$((attempt + 1))
+    if [ "$attempt" -le "$max_attempts" ]; then
+      echo "[Startup] Steam install not ready yet, retrying..."
+    fi
+  done
+
+  echo "[Startup] ERROR: Steam app ${STEAMAPPID} failed to install after ${max_attempts} attempts."
+  return 1
+}
+
+install_game
+
+# Create directories
+mkdir -p \
+  "${CONFIG_DIR}" \
+  "${ADMIN_DIR}" \
+  "${LOGS_DIR}" \
+  "${WORKSHOP_DIR}"
+touch \
+  "${ADMIN_DIR}/bannedplayers.txt" \
+  "${ADMIN_DIR}/bannedmachines.txt" \
+  "${ADMIN_DIR}/mutedplayersvoip.txt" \
+  "${ADMIN_DIR}/mutedplayerschat.txt" \
+  "${ADMIN_DIR}/micspammers.txt" \
+  "${ADMIN_DIR}/serverAdmins.txt" \
+  "${ADMIN_DIR}/serverVIPs.txt"
+
+# Set the config path and logs path based on the provided config
+LOGS_PATH="${LOGS_DIR}/${CONFIG_NAME%.*}"
+CONFIG_PATH="${CONFIG_DIR}/${CONFIG_NAME}"
+echo "[Startup] Starting Holdfast: NaW server with the following parameters:"
+echo "  - Config file: ${CONFIG_PATH}"
+echo "  - Admin config files: ${ADMIN_DIR}"
+echo "  - Logs directory: ${LOGS_DIR}"
+
+# Replace ports in the config file and check if the config file exists
+if [ -f "${CONFIG_PATH}" ]; then
+  sed -i "s/server_port .*/server_port ${GAME_PORT}/" "${CONFIG_PATH}"
+  sed -i "s/steam_query_port .*/steam_query_port ${STEAM_QUERY_PORT}/" "${CONFIG_PATH}"
 else
-	echo "Configuration file not found: $SERVER_CONFIG_PATH"
+  echo "[Startup] ERROR: Config file ${CONFIG_PATH} does not exist."
+  exit 1
 fi
-popd
 
-# Replace Startup Variables
-MODIFIED_STARTUP=$(echo $(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g'))
-START_COMMAND=$(echo -e ${MODIFIED_STARTUP})
-echo -e ":/home/container$ ${START_COMMAND}"
-
-# Run the Server
-eval ${MODIFIED_STARTUP}
+# Start the server with the specified parameters
+"${STEAMAPPDIR}/Holdfast NaW" \
+  -startserver \
+  -serverheadless \
+  -batchmode \
+  -nographics \
+  -screen-width 640 \
+  -screen-height 480 \
+  -screen-quality "Fastest" \
+  -serverConfigFilePath "${CONFIG_PATH}" \
+  -bannedPlayersFilePath "${ADMIN_DIR}/bannedplayers.txt" \
+  -bannedMachinesFilePath "${ADMIN_DIR}/bannedmachines.txt" \
+  -mutedVoipPlayersFilePath "${ADMIN_DIR}/mutedplayersvoip.txt" \
+  -mutedChatPlayersFilePath "${ADMIN_DIR}/mutedplayerschat.txt" \
+  -micSpammersPlayersFilePath "${ADMIN_DIR}/micspammers.txt" \
+  -serverAdminsFilePath "${ADMIN_DIR}/serverAdmins.txt" \
+  -vipPlayersFilePath "${ADMIN_DIR}/serverVIPs.txt" \
+  -logFile "${LOGS_PATH}_outputlog.txt" \
+  -logArchivesDirectory "${LOGS_PATH}_logs_archive/" \
+  -adminCommandsLogFilePath "${LOGS_PATH}_adminactions.txt" \
+  -playersLogFilePath "${LOGS_PATH}_playerlogin.txt" \
+  -scoreboardLogFilePath "${LOGS_PATH}_scorelog.txt" \
+  -chatLogFilePath "${LOGS_PATH}_chatlog.txt" \
+  -vacLogFilePath "${LOGS_PATH}_vaclog.txt" \
+  -workshopDataPath "${WORKSHOP_DIR}"
