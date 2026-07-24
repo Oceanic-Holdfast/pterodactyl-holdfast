@@ -8,8 +8,8 @@ steamcmd \
 	+app_update ${STEAMAPPID} validate \
 	+quit
 
+cp "$STEAMAPPDIR/serverconfig_default.txt" "$CONFIG_DIR/serverconfig_default.txt"
 if [ ! -f "$CONFIG_FILE" ]; then
-  cp "$STEAMAPPDIR/serverconfig_default.txt" "$CONFIG_DIR/serverconfig_default.txt"
   CONFIG_FILE="serverconfig_default.txt"
 fi
 
