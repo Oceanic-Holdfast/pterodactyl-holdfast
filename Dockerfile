@@ -1,15 +1,14 @@
-FROM steamcmd/steamcmd:ubuntu-24
+FROM steamcmd/steamcmd:ubuntu
 
 LABEL author="Lucas Berry" maintainer="lucas@luckinber.com"
 
 # Install runtime dependencies commonly required by Steam/Unity dedicated servers.
-RUN apt-get update \
+RUN apt update \
 	&& apt full-upgrade -y \
-	&& apt-get install -y --no-install-recommends \
+	&& apt install -y --no-install-recommends \
 		ca-certificates \
 		curl \
 		file \
-		iproute2 \
 		libc6-i386 \
 		lib32gcc-s1 \
 		lib32stdc++6 \
@@ -29,11 +28,9 @@ ENV STEAMAPPDIR="${HOME}/${STEAMAPP}-dedicated"
 
 ENV CONFIG_DIR="${STEAMAPPDIR}/configs"
 ENV ADMIN_DIR="${CONFIG_DIR}/admin"
-ENV LOG_DIR="${STEAMAPPDIR}/logs"
+ENV LOGS_DIR="${STEAMAPPDIR}/logs"
 ENV WORKSHOP_DIR="${STEAMAPPDIR}/workshop"
-RUN mkdir -p "${CONFIG_DIR}" "${ADMIN_DIR}" "${LOG_DIR}" "${WORKSHOP_DIR}"
 
-COPY --chown=container:container ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY --chown=container:container --chmod=0755 ./entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

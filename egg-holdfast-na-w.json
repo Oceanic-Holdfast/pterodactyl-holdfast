@@ -6,14 +6,14 @@
     },
     "exported_at": "2026-07-24T13:11:34+10:00",
     "name": "Holdfast NAW",
-    "author": "luckinber@gmail.com",
+    "author": "lucas@luckinber.com",
     "description": "Holdfast: Nations at War update by Luckinber to use the base SteamCMD image and better handle configs and logs",
     "features": [],
     "docker_images": {
         "ghcr.io\/oceanic-holdfast\/pterodactyl-holdfast": "ghcr.io\/oceanic-holdfast\/pterodactyl-holdfast"
     },
     "file_denylist": [],
-    "startup": "\"$STEAMAPPDIR\/Holdfast NaW\" -startserver -serverheadless -batchmode -nographics -screen-width 640 -screen-height 480 -screen-quality \"Fastest\" -serverConfigFilePath \"$CONFIG_DIR\/$CONFIG_FILE\" -bannedPlayersFilePath \"$ADMIN_DIR\/bannedplayers.txt\" -bannedMachinesFilePath \"$ADMIN_DIR\/bannedmachines.txt\" -mutedVoipPlayersFilePath \"$ADMIN_DIR\/muteplayersvoip.txt\" -micSpammersPlayersFilePath \"$ADMIN_DIR\/micspammers.txt\" -mutedChatPlayersFilePath \"$ADMIN_DIR\/muteplayerschat.txt\" -serverAdminsFilePath \"$ADMIN_DIR\/serverAdmins.txt\" -logFile \"$LOG_DIR\/outputlog.txt\" -logArchivesDirectory \"$LOG_DIR\/logs_archive\/\" -adminCommandsLogFilePath \"$LOG_DIR\/adminactions.txt\" -playersLogFilePath \"$LOG_DIR\/playerlogin.txt\" -scoreboardLogFilePath \"$LOG_DIR\/scorelog.txt\" -chatLogFilePath \"$LOG_DIR\/chatlog.txt\" -vacLogFilePath \"$LOG_DIR\/vaclog.txt\" -workshopDataPath \"$WORKSHOP_DIR\"",
+    "startup": "{{STEAMAPPDIR}}\/Holdfast NaW\" \\\r\n-startserver \\\r\n-serverheadless \\\r\n-batchmode \\\r\n-nographics \\\r\n-screen-width 640 \\\r\n-screen-height 480 \\\r\n-screen-quality \"Fastest\" \\\r\n-serverConfigFilePath \"{{CONFIG_DIR}}\/{{CONFIG_PATH}}\" \\\r\n-bannedPlayersFilePath \"{{ADMIN_DIR}}\/bannedplayers.txt\" \\\r\n-bannedMachinesFilePath \"{{ADMIN_DIR}}\/bannedmachines.txt\" \\\r\n-mutedVoipPlayersFilePath \"{{ADMIN_DIR}}\/muteplayersvoip.txt\" \\\r\n-micSpammersPlayersFilePath \"{{ADMIN_DIR}}\/micspammers.txt\" \\\r\n-mutedChatPlayersFilePath \"{{ADMIN_DIR}}\/muteplayerschat.txt\" \\\r\n-serverAdminsFilePath \"{{ADMIN_DIR}}\/serverAdmins.txt\" \\\r\n-logFile \"{{LOG_DIR}}\/outputlog.txt\" \\\r\n-logArchivesDirectory \"{{LOG_DIR}}\/logs_archive\/\" \\\r\n-adminCommandsLogFilePath \"{{LOG_DIR}}\/adminactions.txt\" \\\r\n-playersLogFilePath \"{{LOG_DIR}}\/playerlogin.txt\" \\\r\n-scoreboardLogFilePath \"{{LOG_DIR}}\/scorelog.txt\" \\\r\n-chatLogFilePath \"{{LOG_DIR}}\/chatlog.txt\" \\\r\n-vacLogFilePath \"{{LOG_DIR}}\/vaclog.txt\" \\\r\n-workshopDataPath \"{{WORKSHOP_DIR}}\"",
     "config": {
         "files": "{}",
         "startup": "{\r\n    \"done\": \"Found configuration file\",\r\n    \"userInteraction\": []\r\n}",
@@ -29,13 +29,13 @@
     },
     "variables": [
         {
-            "name": "Config Name",
-            "description": "Tells the server which config to load in the configs folder.",
-            "env_variable": "CONFIG_FILE",
+            "name": "Config Path",
+            "description": "Tells the server which config to load.",
+            "env_variable": "CONFIG_PATH",
             "default_value": "serverconfig_default.txt",
             "user_viewable": true,
             "user_editable": true,
-            "rules": "required|string|max:20",
+            "rules": "required|string|max:200",
             "field_type": "text"
         }
     ]
