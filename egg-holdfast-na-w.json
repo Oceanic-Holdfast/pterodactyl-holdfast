@@ -18,7 +18,7 @@
         "files": "{}",
         "startup": "{\r\n    \"done\": \"Found configuration file\",\r\n    \"userInteraction\": []\r\n}",
         "logs": "{\r\n    \"custom\": true,\r\n    \"location\": \"logs\/latest.log\"\r\n}",
-        "stop": "^C"
+        "stop": "^^C"
     },
     "scripts": {
         "installation": {
