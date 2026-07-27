@@ -7,9 +7,6 @@ install_game() {
   local attempt=1
   local max_attempts=5
 
-  # Prime SteamCMD state on fresh containers.
-  steamcmd +quit || true
-
   while [ "$attempt" -le "$max_attempts" ]; do
     echo "[startup] Steam install attempt ${attempt}/${max_attempts}"
 
