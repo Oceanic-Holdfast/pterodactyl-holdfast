@@ -39,6 +39,16 @@
             "field_type": "text"
         },
         {
+            "name": "Maximum Players",
+            "description": "Maximum number of players allowed on the server.",
+            "env_variable": "MAX_PLAYERS",
+            "default_value": "200",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1,300",
+            "field_type": "text"
+        },
+        {
             "name": "Server Port",
             "description": "Port used by the Holdfast server.",
             "env_variable": "GAME_PORT",

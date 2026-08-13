@@ -14,7 +14,7 @@ install_game() {
     if steamcmd \
       +force_install_dir "${STEAMAPPDIR}" \
       +login anonymous \
-      +app_update "${STEAMAPPID}" validate \
+      +app_update "${STEAMAPPID}" \
       +quit; then
       if [ -x "$STEAMAPPDIR/Holdfast NaW" ]; then
         echo "[Startup] Steam app ${STEAMAPPID} installed successfully."
@@ -65,6 +65,7 @@ echo "  - Logs directory: ${LOGS_DIR}"
 if [ -f "${CONFIG_PATH}" ]; then
   sed -i "s/server_port .*/server_port ${GAME_PORT}/" "${CONFIG_PATH}"
   sed -i "s/steam_query_port .*/steam_query_port ${STEAM_QUERY_PORT}/" "${CONFIG_PATH}"
+  sed -i "s/maximum_players .*/maximum_players ${MAX_PLAYERS}/" "${CONFIG_PATH}"
 else
   echo "[Startup] ERROR: Config file ${CONFIG_PATH} does not exist."
   exit 1
