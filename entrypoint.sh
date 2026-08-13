@@ -72,7 +72,7 @@ else
 fi
 
 # Start the server with the specified parameters
-"${STEAMAPPDIR}/Holdfast NaW" \
+tail -F "${LOGS_PATH}_outputlog.txt" & exec "${STEAMAPPDIR}/Holdfast NaW" \
   -startserver \
   -serverheadless \
   -batchmode \
