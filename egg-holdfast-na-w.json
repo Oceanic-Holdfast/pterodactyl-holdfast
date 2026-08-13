@@ -16,7 +16,7 @@
     "startup": "tail -F \"{{LOGS_PATH}}_outputlog.txt\" & exec \"{{STEAMAPPDIR}}\/Holdfast NaW\" \\\r\n-startserver \\\r\n-serverheadless \\\r\n-batchmode \\\r\n-nographics \\\r\n-screen-width 640 \\\r\n-screen-height 480 \\\r\n-screen-quality \"Fastest\" \\\r\n-serverConfigFilePath \"{{CONFIG_DIR}}\/{{CONFIG_PATH}}\" \\\r\n-bannedPlayersFilePath \"{{ADMIN_DIR}}\/bannedplayers.txt\" \\\r\n-bannedMachinesFilePath \"{{ADMIN_DIR}}\/bannedmachines.txt\" \\\r\n-mutedVoipPlayersFilePath \"{{ADMIN_DIR}}\/muteplayersvoip.txt\" \\\r\n-micSpammersPlayersFilePath \"{{ADMIN_DIR}}\/micspammers.txt\" \\\r\n-mutedChatPlayersFilePath \"{{ADMIN_DIR}}\/muteplayerschat.txt\" \\\r\n-serverAdminsFilePath \"{{ADMIN_DIR}}\/serverAdmins.txt\" \\\r\n-logFile \"{{LOG_DIR}}\/outputlog.txt\" \\\r\n-logArchivesDirectory \"{{LOG_DIR}}\/logs_archive\/\" \\\r\n-adminCommandsLogFilePath \"{{LOG_DIR}}\/adminactions.txt\" \\\r\n-playersLogFilePath \"{{LOG_DIR}}\/playerlogin.txt\" \\\r\n-scoreboardLogFilePath \"{{LOG_DIR}}\/scorelog.txt\" \\\r\n-chatLogFilePath \"{{LOG_DIR}}\/chatlog.txt\" \\\r\n-vacLogFilePath \"{{LOG_DIR}}\/vaclog.txt\" \\\r\n-workshopDataPath \"{{WORKSHOP_DIR}}\"",
     "config": {
         "files": "{}",
-        "startup": "{\r\n    \"done\": \"Total:\",\r\n    \"userInteraction\": []\r\n}",
+        "startup": "{\r\n    \"done\": \"Finished loading map in\",\r\n    \"userInteraction\": []\r\n}",
         "logs": "{\r\n    \"custom\": true,\r\n    \"location\": \"logs\/latest.log\"\r\n}",
         "stop": "^^C"
     },
