@@ -53,8 +53,7 @@ touch \
   "${ADMIN_DIR}/serverAdmins.txt" \
   "${ADMIN_DIR}/serverVIPs.txt"
 
-# Set the config path and logs path based on the provided config
-LOGS_PATH="${LOGS_DIR}/${CONFIG_NAME%.*}"
+# Set the config path based on the provided config
 CONFIG_PATH="${CONFIG_DIR}/${CONFIG_NAME}"
 echo "[Startup] Starting Holdfast: NaW server with the following parameters:"
 echo "  - Config file: ${CONFIG_PATH}"
@@ -72,7 +71,7 @@ else
 fi
 
 # Start the server with the specified parameters
-tail -F "${LOGS_PATH}_outputlog.txt" & exec "${STEAMAPPDIR}/Holdfast NaW" \
+tail -F "${LOGS_DIR}/outputlog.txt" & exec "${STEAMAPPDIR}/Holdfast NaW" \
   -startserver \
   -serverheadless \
   -batchmode \
@@ -88,11 +87,11 @@ tail -F "${LOGS_PATH}_outputlog.txt" & exec "${STEAMAPPDIR}/Holdfast NaW" \
   -micSpammersPlayersFilePath "${ADMIN_DIR}/micspammers.txt" \
   -serverAdminsFilePath "${ADMIN_DIR}/serverAdmins.txt" \
   -vipPlayersFilePath "${ADMIN_DIR}/serverVIPs.txt" \
-  -logFile "${LOGS_PATH}_outputlog.txt" \
-  -logArchivesDirectory "${LOGS_PATH}_logs_archive/" \
-  -adminCommandsLogFilePath "${LOGS_PATH}_adminactions.txt" \
-  -playersLogFilePath "${LOGS_PATH}_playerlogin.txt" \
-  -scoreboardLogFilePath "${LOGS_PATH}_scorelog.txt" \
-  -chatLogFilePath "${LOGS_PATH}_chatlog.txt" \
-  -vacLogFilePath "${LOGS_PATH}_vaclog.txt" \
+  -logFile "${LOGS_DIR}/outputlog.txt" \
+  -logArchivesDirectory "${LOGS_DIR}/logs_archive/" \
+  -adminCommandsLogFilePath "${LOGS_DIR}/adminactions.txt" \
+  -playersLogFilePath "${LOGS_DIR}/playerlogin.txt" \
+  -scoreboardLogFilePath "${LOGS_DIR}/scorelog.txt" \
+  -chatLogFilePath "${LOGS_DIR}/chatlog.txt" \
+  -vacLogFilePath "${LOGS_DIR}/vaclog.txt" \
   -workshopDataPath "${WORKSHOP_DIR}"
