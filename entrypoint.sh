@@ -55,10 +55,12 @@ touch \
 
 # Set the config path based on the provided config
 CONFIG_PATH="${CONFIG_DIR}/${CONFIG_NAME}"
+LOGS_ARCHIVE="${LOGS_DIR}/${CONFIG_NAME%.*}"
 echo "[Startup] Starting Holdfast: NaW server with the following parameters:"
 echo "  - Config file: ${CONFIG_PATH}"
 echo "  - Admin config files: ${ADMIN_DIR}"
 echo "  - Logs directory: ${LOGS_DIR}"
+echo "  - Logs archive directory: ${LOGS_ARCHIVE}"
 
 # Replace ports in the config file and check if the config file exists
 if [ -f "${CONFIG_PATH}" ]; then
@@ -88,7 +90,7 @@ tail -F "${LOGS_DIR}/outputlog.txt" & exec "${STEAMAPPDIR}/Holdfast NaW" \
   -serverAdminsFilePath "${ADMIN_DIR}/serverAdmins.txt" \
   -vipPlayersFilePath "${ADMIN_DIR}/serverVIPs.txt" \
   -logFile "${LOGS_DIR}/outputlog.txt" \
-  -logArchivesDirectory "${LOGS_DIR}/logs_archive/" \
+  -logArchivesDirectory "${LOGS_ARCHIVE}" \
   -adminCommandsLogFilePath "${LOGS_DIR}/adminactions.txt" \
   -playersLogFilePath "${LOGS_DIR}/playerlogin.txt" \
   -scoreboardLogFilePath "${LOGS_DIR}/scorelog.txt" \
