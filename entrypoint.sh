@@ -98,5 +98,8 @@ tail -F "${LOGS_DIR}/outputlog.txt" & exec "${STEAMAPPDIR}/Holdfast NaW" \
   -vacLogFilePath "${LOGS_DIR}/vaclog.txt" \
   -workshopDataPath "${WORKSHOP_DIR}"
 
+# Move most recent archived mapvoting log back to the logs directory for hysteresis
+latest=$(ls -t "${LOGS_ARCHIVE}"/*mapvoting.txt 2>/dev/null | head -n1) && mv "$latest" "${LOGS_DIR}/mapvoting.txt" 2>/dev/null || true
+
 echo "[Startup] Holdfast: NaW server has exited."
 echo "[Startup] Logs can be found in ${LOGS_ARCHIVE}."
