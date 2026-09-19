@@ -97,3 +97,6 @@ tail -F "${LOGS_DIR}/outputlog.txt" & exec "${STEAMAPPDIR}/Holdfast NaW" \
   -chatLogFilePath "${LOGS_DIR}/chatlog.txt" \
   -vacLogFilePath "${LOGS_DIR}/vaclog.txt" \
   -workshopDataPath "${WORKSHOP_DIR}"
+
+echo "[Startup] Holdfast: NaW server has exited."
+echo "[Startup] Logs can be found in ${LOGS_ARCHIVE}."
